@@ -1,0 +1,254 @@
+#include <LiquidCrystal_I2C.h>  //Had to find a header file from the Arduino support website
+#include <Wire.h>                //  **NOTE**  I tried using a function for all the repeated code for setting the time, 
+#include <stdio.h>                //            but there seemed to be an issue with pointers and address to the LCD screen.
+LiquidCrystal_I2C LCD(0x3F, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);    //  needless to say, I didn't figure it out...  it was too unstable.
+
+void setup() {                  //Setting up all the pins and initializing the LCD screen
+  int LEDS = 5;
+  int menuButton = 2;
+  pinMode(LEDS, OUTPUT);
+  pinMode(menuButton, INPUT);
+  LCD.begin(20,4);
+  int Sec = 0;
+  int Min = 0;
+  int Hr = 12;
+}
+
+void loop() {
+  LCD.setCursor(0,0);          //initializing all variables
+  int H, M, S;
+  int Hr = 1;
+  int Min = 0;
+  int Sec = 0;
+  int AHr = 1;
+  int AMin = 0;
+  const int menuButton = 2;
+  const int LEDS = 5;
+  int push = LOW;
+  int addButton = LOW;
+  int subButton = LOW;
+  char CYCLE = 'A';
+  char ACYCLE = 'A';
+ 
+   LCD.clear();
+  LCD.setCursor(2,1);            //begins the program with the screen printing "Time"
+  LCD.print("Time");
+  delay(2000);
+  push = digitalRead(2);
+  while (push == LOW){          //The first loop is to set the Hrs for the clock time
+    delay(200);
+    push = digitalRead(menuButton);
+    addButton = digitalRead(3);
+    subButton = digitalRead(4);
+     if (push == HIGH) {
+      delay(200);
+      break;
+    }
+    if (addButton == HIGH) {
+           Hr = Hr + 1;
+      delay(200);
+    }
+    if (subButton == HIGH) {
+      Hr = Hr - 1;
+      delay(200);
+    }
+    
+    LCD.clear();
+    LCD.setCursor(2,2);        //printing the number of hours to the screen as you change it
+    LCD.print("Hrs:  ");
+    LCD.print(Hr);
+    delay(100);
+  }
+  delay(200);
+  push = digitalRead(2);
+  while (push == LOW) {      //The second loop is to set the Mins for the clock time
+    delay(200);
+    push = digitalRead(2);
+    addButton = digitalRead(3);
+    subButton = digitalRead(4);
+    if (push == HIGH) {
+      delay(200);
+      break;
+    }
+     if (addButton == HIGH) {
+      Min = Min + 1;
+      delay(200);
+    }
+    if (subButton == HIGH) {
+      Min = Min - 1;
+      delay(200);
+    }
+    LCD.clear();
+    LCD.setCursor(2,2);      //printing the number of Mins as you change it
+    LCD.print("Mins:  ");
+    LCD.print(Min);
+    delay(100);
+  }
+    delay(200);
+  push = digitalRead(2);
+  while (push == LOW) {    //Allows the time to be set for AM or PM
+    delay(200);
+    push = digitalRead(2);
+    addButton = digitalRead(3);
+    if (push == HIGH) {
+      delay(200);
+      break;
+    }
+     if (addButton == HIGH) {
+      if(CYCLE == 'A'){
+      CYCLE = 'P';
+     }
+     else {
+       CYCLE = 'A';
+     }
+      delay(200);
+    }
+    LCD.clear();
+    LCD.setCursor(2,2);
+    LCD.print("Time A or P? :  ");
+    LCD.print(CYCLE);
+    delay(100);
+  }
+  LCD.clear();
+  LCD.setCursor(2,1);
+  LCD.print("Alarm");    //Prints "ALARM" to screen to let you know it is setting the Alarm time
+  LCD.setCursor(2,2);
+  delay(2000);
+  push = digitalRead(2);
+  while (push == LOW) {      //  This loop is for setting the Hrs for the ALarm time
+    delay(200);
+    push = digitalRead(2);
+    addButton = digitalRead(3);
+    subButton = digitalRead(4);
+    if (push == HIGH) {
+    delay(200);
+    break;
+    }
+    if(addButton == HIGH) {
+      AHr = AHr + 1;
+      delay(200);
+    }
+    if (subButton == HIGH) {
+      AHr = AHr - 1;
+      delay(200);
+    }
+    LCD.clear();
+    LCD.setCursor(2,1);
+    LCD.print("Alarm Hr:");
+    LCD.setCursor(2,2);
+    LCD.print(AHr);
+  }
+  delay(200);
+  push = digitalRead(2);
+  while (push == LOW) {      //This loop sets the Mins for the Alarm time
+    delay(200);
+    push = digitalRead(2);
+    addButton = digitalRead(3);
+    subButton = digitalRead(4);
+    if(push == HIGH) {
+    delay(200);
+    break;
+    }
+    if (addButton == HIGH) {
+      AMin = AMin + 1;
+      delay(200);
+    }
+    if (subButton == HIGH) {
+      AMin = AMin - 1;
+      delay(200);
+    }
+    LCD.clear();
+    LCD.setCursor(2,1);
+    LCD.print("Alarm Mins");
+    LCD.setCursor(2,2);
+    LCD.print(AMin);
+  }
+  delay(200);
+   push = digitalRead(2);
+  while (push == LOW) {      //This loop allows you to set AM or PM for the alarm time
+    delay(200);
+    push = digitalRead(2);
+    addButton = digitalRead(3);
+    if (push == HIGH) {
+      delay(200);
+      break;
+    }
+     if (addButton == HIGH) {
+      if(ACYCLE == 'A'){
+      ACYCLE = 'P';
+     }
+     else {
+       ACYCLE = 'A';
+     }
+      delay(200);
+    }
+    LCD.clear();
+    LCD.setCursor(2,2);
+    LCD.print("Alarm A or P? :  ");
+    LCD.print(ACYCLE);
+    delay(100);
+  }
+ for (H = Hr; H < 13; ++H) {        //these three loops allow for the time to run
+ for (M = Min; M < 60; ++M) {
+ for (S = Sec; S < 60; ++S) { 
+   Sec = S;
+   Min = M;
+   Hr = H;
+    LCD.clear();
+    LCD.setCursor(0,1);
+    LCD.print(Hr);
+    LCD.print(":");
+    if (Min < 10) {              //while printing the number of Mins, it checks to see how many minutes and prints "01" instead of just "1".  this works from "0" to "9"
+      LCD.print("0");
+    }
+    LCD.print(Min);
+    LCD.print(":");
+    if (Sec < 10) {            //this is the same as the minutes checker, it prints two digits when the number is in single digits. ex: "01"
+      LCD.print("0");
+    }
+    LCD.print(Sec);
+    LCD.print(CYCLE);
+    LCD.setCursor(0,2);
+    LCD.print(AHr);
+    LCD.print(":");
+    if (AMin < 10) {
+      LCD.print("0");
+    }
+    LCD.print(AMin);
+    LCD.print(ACYCLE);            //at this point, the full time is printed to the screen as "Hours : Minutes : Seconds  AM/PM
+    delay(800);                   //                                                          "Alarm Hours : Alarm Minutes AM/PM
+    push = LOW;
+   if(AMin == Min && AHr == Hr) {
+     LCD.setCursor(1,2);
+      LCD.noBacklight();
+      digitalWrite(LEDS, HIGH);
+      delay(100);
+      LCD.backlight();
+      digitalWrite(LEDS, LOW);
+      push = digitalRead(2);
+      if (push == HIGH) {
+       AHr = 0;
+       AMin = 0; 
+      }
+      }
+  if (S >= 59) {        //Everything below this point is making sure that the time counts from 59 back to zero and adding another onto the next larger time scale.  Ex:  0 Hrs : 59 Mins : 59 Secs -> 1 Hr : 00 Mins : 00 Secs
+     S = 0;              
+     ++M;
+  }
+ }
+ if (M >= 59) {
+   M = 0;
+   ++H;
+ }
+ }
+ if (H = 12) {
+   H = 1;
+   if (CYCLE == 'A'){              //  AM and PM also switch here (but I doubt anyone wants to sit and watch it that long...  it does work though!!!)
+     CYCLE = 'P';
+   }
+   else {
+       CYCLE = 'A';
+     }
+   }
+  }
+}
