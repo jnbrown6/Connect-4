@@ -1,0 +1,152 @@
+// Connect-4
+// Play connect four with command line!  coded in C.
+//Created by Alex Carpenter and Jacob Brown Nov 2016
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void printBoard (char array[9][9]);
+void playerTurn (int* turn, char array[9][9], int* pselect);
+void printRules (void);
+void intialBoard (char array[9][9]);
+char checkWinner (char array[9][9]);
+
+int main(void){
+	int turn = 1;		//player 1 starts
+	char board[9][9];	//borders on left, right and bottom
+	int pselect;		//user decides column (1-7)
+	int piece;		//'x' or 'o'
+	int i, j;
+	char gameOver = 'n';
+	
+
+	printRules ();
+	intialBoard (board);
+	printBoard (board);
+	printf("\n\n");
+	
+	while (gameOver == 'n'){
+		printf ("Player %d turn.\n", turn);
+		playerTurn (&turn, board, &pselect);
+		printBoard (board);
+		gameOver = checkWinner(board);
+		if (gameOver == 'y') {
+			if ( turn == 2) {
+				printf("Congratulations Player1! You Win!\n");
+				return 0;
+			}
+			else {
+				printf("Congratulations Player2! You Win!\n");
+				return 0;
+			}
+		}
+
+	}
+}
+
+void printRules (void) {
+	printf("\n\tConnect 4\t\n\n");
+	printf("Rules:\n");
+	printf("Player one will be 'x'\n");
+	printf("Player two will be 'o'\n");
+	printf("The winner will be determined by whoever is able to connect four of their\ncharacters in a straight line or diagonal line.\n");
+	}
+
+void intialBoard (char array[9][9]) {
+	int i, j;
+	char array1[9][9] = {	{' ', '1', '2', '3', '4', '5', '6', '7', ' '},
+			  	{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+				{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+				{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+				{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+				{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+				{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+				{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+				{' ', '_', '_', '_', '_', '_', '_', '_', ' '}
+				};
+
+	for (i = 0; i < 9; i++) {
+		for (j = 0; j < 9; j++) {
+			array[i][j] = array1[i][j];
+		}
+	}
+}
+
+void printBoard (char array[9][9]) {
+
+	int i, j;
+
+	for (i = 0; i < 9; i++) {
+		for (j = 0; j < 9; j++) {
+			printf("|%c|", array[i][j]);
+		}
+	printf("\n");
+	}
+	printf("\n");	
+}
+
+void playerTurn (int* turn, char array[9][9], int* pselect) {
+	int i;
+	int temp = 0;
+	char piece;
+
+	
+	while (temp < 1 || temp > 7) {
+		printf("Make a selection from 1 - 7: ");
+		scanf("%d", &temp);
+	}
+	if (*turn == 1) {
+		piece = 'x';
+	}
+	else {
+		piece = 'o';
+	}
+	*pselect = temp;
+
+	for (i = 1; i < 9; i++) {
+		if (array[i][*pselect] != ' ' || array[i][*pselect] == '_') {
+			array[i - 1][*pselect] = piece;
+			break;
+		}
+	}
+
+	if (*turn == 1) {
+		*turn = 2;
+	}
+	else {
+		*turn = 1;
+	}
+}
+char checkWinner (char array[9][9]) {
+	char win = 'n';
+	int i = 0;
+	int j = 0;
+
+	for (i = 1; i < 8; ++i) {
+		for (j = 1; j < 8; ++j) {
+			if (array[i][j] == array[i + 1][j] && array[i + 1][j] == array[i + 2][j] && array[i + 2][j] == array[i + 3][j] && array[i][j] != ' ') {
+				win = 'y';
+			}
+			if (array[i][j] == array[i + 1][j + 1] && array[i + 1][j + 1] == array[i + 2][j + 2] && array[i + 2][j + 2] == array[i + 3][j + 3] && array[i][j] != ' ') {
+				win = 'y';
+			}
+			if (array[i][j] == array[i][j + 1] && array[i][j + 1] == array[i][j + 2] && array[i][j + 2] == array[i][j + 3] && array[i][j] != ' ') {
+				win = 'y';
+			}
+			if (array[i][j] == array[i - 1][j - 1] && array[i - 1][j - 1] == array[i - 2][j - 2] && array[i - 2][j - 2] == array[i - 3][j - 3] && array[i][j] != ' ') {
+				win = 'y';
+			}
+			if (array[8 - i][8 - j] == array[7 - i][7 - j] && array[7 - i][7 - j] == array[6 - i][6 - j] && array[6 - i][6 - j] == array[5 - i][5 - j] && array[8 - i][8 - j] != ' ') {
+				win = 'y';
+			}
+			if (array[8 - i][j] == array[7 - i][j + 1] && array[7 - i][j + 1] == array[6 - i][j + 2] && array[6 - i][j + 2] == array[5 - i][j + 3] && array[8 - i][j] != ' ') {
+				win = 'y';
+			}
+			if (array[i][8 - j] == array[i + 1][7 - j] && array[i + 1][7 - j] == array[i + 2][6 - j] && array[i + 2][6 - j] == array[i + 3][5 - j] && array[i][8 - j] != ' ') {
+				win = 'y';
+			}
+		}
+	}
+return win;
+}
